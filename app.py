@@ -9,8 +9,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Firebase Setup
 if not firebase_admin._apps:
     import json
-    firebase_secrets = st.secrets["firebase"]
-    cred = credentials.Certificate(dict(firebase_secrets))
+    import tempfile
+    # Convert secrets to a real JSON file
+    firebase_config = st.secrets["firebase"]
+    with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".json") as f:
+        json.dump(firebase_dict, f)
+        f.flush()
+        cred = credentials.Certificate(f.name)
     firebase_admin.initialize_app(cred)
 db = firestore.client()
 
