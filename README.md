@@ -8,3 +8,8 @@ It uses TF-IDF, cosine similarity, and Firebase for login and storing user data.
 - Save, like, and watch talks
 - Personalized recommendations
 - Natural language search
+
+## 🌐 Live App
+
+TEDFLARE is deployed on Streamlit Cloud:  
+👉 [Click here to open](https://tedflare-gzv9cjuj6smrlmjzmojhbc.streamlit.app/)
