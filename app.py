@@ -3,16 +3,13 @@ import firebase_admin
 from firebase_admin import auth, credentials, firestore
 import pandas as pd
 import numpy as np
+import json
+import tempfile
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Firebase Setup
 if not firebase_admin._apps:
-    import json
-    import tempfile
-    import streamlit as st
-    import firebase_admin
-    from firebase_admin import credentials
     # Convert secrets to a real JSON file
     firebase_dict = st.secrets["firebase"]
     with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".json") as f:
