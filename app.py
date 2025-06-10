@@ -12,6 +12,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 if not firebase_admin._apps:
     # Convert secrets to a real JSON file
     firebase_dict = dict(st.secrets["firebase"])
+    firebase_dict["private_key"] = firebase_dict["private_key"].replace("\\n", "\n")
     with tempfile.NamedTemporaryFile(delete=False, mode="w", suffix=".json") as f:
         json.dump(firebase_dict, f)
         f.flush()
