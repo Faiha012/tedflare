@@ -67,13 +67,13 @@ streamlit run app.py
 
 
 
-## 👩‍💻 Developed By
+👩‍💻 Developed By
 
-**Faiha Fathima M R**  
+Faiha Fathima M R 
 Developed as part of academic project work.
 
 
-## 📃 License
+📃 License
 
 This project is for educational use only.  
 Do not upload your Firebase credentials to public repositories.
