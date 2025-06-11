@@ -165,40 +165,31 @@ else:
             # Convert to DataFrame indices
             talk_indices = []
             for tid in combined_ids:
-                if not df[df['id'] == int(tid)].empty:
-                    idx = df[df['id'] == int(tid)].index[0]
-                    talk_indices.append(idx)
+                try:
+                    tid_int = int(tid)
+                    if not df[df['id'] == int(tid)].empty:
+                        idx = df[df['id'] == int(tid)].index[0]
+                        talk_indices.append(idx)
+                except:
+                    continue #skip invalid IDs
 
             if not talk_indices:
                 st.warning("Watch or like at least one talk to get recommendations!")
             else:
-                # Get the saved talks from Firestore
-                user_doc = db.collection("users").document(user_id).get()
-                if user_doc.exists:
-                    saved_talks = user_doc.to_dict().get("saved_talks", [])
-                else:
-                    saved_talks = []
+                # Average vector of liked + watched
+                user_profile_vector = np.asarray(tfidf_matrix[talk_indices].mean(axis=0)).reshape(1, -1)
+                similarity_scores = cosine_similarity(user_profile_vector, tfidf_matrix).flatten()
 
-                # 🔄 Convert string IDs to integers (if needed)
-                liked_indices = [int(talk_id) for talk_id in saved_talks if str(talk_id).isdigit()]
-                
-                if liked_indices:
-                    # Average vector of liked + watched
-                    user_profile_vector = np.asarray(tfidf_matrix[liked_indices].mean(axis=0)).reshape(1, -1)
-                    similarity_scores = cosine_similarity(user_profile_vector, tfidf_matrix).flatten()
+                # Recommend talks not already liked/watched
+                recommended_indices = np.argsort(similarity_scores)[::-1]
+                recommended_indices = [i for i in recommended_indices if i not in talk_indices]
+                top_indices = recommended_indices[:5]
 
-                    # Recommend talks not already liked/watched
-                    recommended_indices = np.argsort(similarity_scores)[::-1]
-                    recommended_indices = [i for i in recommended_indices if i not in talk_indices]
-                    top_indices = recommended_indices[:5]
-
-                    st.info("Recommendations based on all your liked and watched talks 💡")
-                    st.write("Recommended Talks:")
-                    for idx in top_indices:
-                        row = df.iloc[idx]
-                        st.write(f"[{row['title']}]({row['url']})")
-                else:
-                    similarity_scores = np.zeros(len(df))  # fallback if no saved talks
+                st.info("Recommendations based on all your liked and watched talks 💡")
+                st.write("Recommended Talks:")
+                for idx in top_indices:
+                    row = df.iloc[idx]
+                    st.write(f"[{row['title']}]({row['url']})")
 
         
         # 🔍 Natural Language Search
